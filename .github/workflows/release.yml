@@ -1,0 +1,51 @@
+name: Publish Gems
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write # rubygems.org trusted publishing (OIDC) — no API key secret
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          persist-credentials: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: gravis
+          bundler-cache: true
+
+      - name: Test core
+        run: bundle exec rubocop && bundle exec rspec
+        working-directory: gravis
+
+      - name: Bundle adapter
+        run: bundle install
+        working-directory: gravis-ecs
+
+      - name: Test adapter
+        run: bundle exec rubocop && bundle exec rspec
+        working-directory: gravis-ecs
+
+      # Lockstep release: both gems, same version, core first (the adapter
+      # depends on it with an exact pin).
+      - name: Publish gravis (core)
+        uses: rubygems/release-gem@v1
+        with:
+          working-directory: gravis
+
+      - name: Publish gravis-ecs
+        uses: rubygems/release-gem@v1
+        with:
+          working-directory: gravis-ecs

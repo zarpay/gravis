@@ -1,0 +1,4 @@
+gem/Gemfile.lock
+gem/*.gem
+gem/.bundle/
+gem/tmp/

@@ -1,0 +1,9 @@
+# Solid Queue configuration the gravis on-demand Fargate task boots with
+# (`rails gravis:work`). Workers only — the always-on box runs the sole
+# dispatcher/scheduler. GRAVIS_QUEUES is injected per task by the dispatch
+# job's RunTask override so each task polls only its own size's queue.
+workers:
+  - queues: <%= ENV.fetch("GRAVIS_QUEUES", "gravis-*") %>
+    threads: 1
+    processes: 1
+    polling_interval: 0.1

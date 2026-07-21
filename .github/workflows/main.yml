@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gem: [gravis, gravis-ecs]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: ${{ matrix.gem }}
+          bundler-cache: true
+      - run: bundle exec rubocop
+        working-directory: ${{ matrix.gem }}
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gem: [gravis, gravis-ecs]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: ${{ matrix.gem }}
+          bundler-cache: true
+      - run: bundle exec rspec
+        working-directory: ${{ matrix.gem }}

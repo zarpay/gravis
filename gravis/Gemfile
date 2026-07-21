@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gemspec
+
+gem "rails", ">= 8.0"
+gem "sqlite3"
+gem "rspec", "~> 3.13"
+gem "rubocop-rails-omakase", require: false
